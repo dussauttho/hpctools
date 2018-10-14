@@ -193,8 +193,12 @@ vector<vector<double>> vectorToColumn(const vector<double>& vec){
 }
 
 
-int main(int, char**) {
-  
+int main(int, char** argv) {
+
+  srand (static_cast <unsigned> (time(0)));
+  unsigned len = (unsigned) atoi(argv[1]);
+  unsigned min = -100 ;
+  unsigned max = 100 ;
   // const string filea = argv[1];
   // const unsigned sizea = strtoul(argv[2], NULL, 0);
   // const string fileb = argv[3];
@@ -207,39 +211,45 @@ int main(int, char**) {
   // vector<vector<double> > b = readerb.getData();
   // vector<double> B = columnToVector(b,sizeb);
 
-  vector<vector<double>> A = {
-    {1,2},
-    {3,-0.2}
-  };
-  vector<vector<double>> B = {
-    {7, 2},
-    {0, 0}
-  };
+  vector<vector<double>> A(len,vector<double>(len,0));
+  vector<vector<double>> B(len,vector<double>(len,0));  
+  for(unsigned i=0; i<len;++i){
+    for(unsigned j=0;j<len;++j){
+      A[i][j] = (max - min) * ( (double)rand() / (double)RAND_MAX ) + min;
+      B[i][j] = (max - min) * ( (double)rand() / (double)RAND_MAX ) + min;
+    }
+  }
 
   unsigned n = A.size();
-  print_matrix("A",A);
-  print_matrix("B",B);
-  cout<<endl;
+  //print_matrix("A",A);
+  //print_matrix("B",B);
+  //cout<<endl;
 
   vector<vector<double>> R(n,vector<double>(n,0));
   vector<vector<double>> Q(n,vector<double>(n,0));
+
+  clock_t t1 = clock();
 
   initQR(Q,R,A,n);
   QR_decomposition_givens(Q,R,n);
   trans(Q);
 
-  print_matrix("Q", Q);
+  //print_matrix("Q", Q);
   B=mult(Q,B);
-  print_matrix("R",R);
-  print_matrix("Q*R",mult(Q,R));
+  //print_matrix("R",R);
+  //print_matrix("Q*R",mult(Q,R));
 
   vector<vector<double>> X = resolve(R,B);
 
 
-  print_matrix("AX =", mult(A,X));
+  //print_matrix("AX =", mult(A,X));
 
   cout<<endl<<"The answer of the linear system of equation AX=B is"<<endl;
   print_matrix("X = ",X);
+
+  clock_t t2 = clock();
+
+  cout<<endl<<"It took "<<((float)t2-(float)t1)/CLOCKS_PER_SEC<<" seconds to run with a matrix size of "<<len<<endl;
 
 
 
